@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def descriptions():
@@ -25,7 +25,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     name='octodns-edgedns',
-    packages=('octodns_edgedns',),
+    packages=find_packages(),
     python_requires='>=3.6',
     install_requires=(
         'edgegrid-python>=1.2.1',
@@ -35,8 +35,8 @@ setup(
     url='https://github.com/octodns/octodns-edgedns',
     version=version(),
     tests_require=(
-        'nose',
-        'nose-no-network',
+        'pytest',
+        'pytest-network',
         'requests_mock',
     ),
 )

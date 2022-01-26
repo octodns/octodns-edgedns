@@ -16,7 +16,7 @@ from octodns_edgedns import AkamaiProvider
 
 class TestEdgeDnsProvider(TestCase):
     expected = Zone('unit.tests.', [])
-    source = YamlProvider('test', join(dirname(__file__), 'tests', 'config'))
+    source = YamlProvider('test', join(dirname(__file__), 'config'))
     source.populate(expected)
 
     # Our test suite differs a bit, add our NS and remove the simple one
@@ -44,7 +44,7 @@ class TestEdgeDnsProvider(TestCase):
                 zone = Zone('unit.tests.', [])
                 provider.populate(zone)
 
-            self.assertEquals(401, ctx.exception.response.status_code)
+            self.assertEqual(401, ctx.exception.response.status_code)
 
         # general error
         with requests_mock() as mock:
@@ -53,7 +53,7 @@ class TestEdgeDnsProvider(TestCase):
             with self.assertRaises(HTTPError) as ctx:
                 zone = Zone('unit.tests.', [])
                 provider.populate(zone)
-            self.assertEquals(502, ctx.exception.response.status_code)
+            self.assertEqual(502, ctx.exception.response.status_code)
 
         # Non-existant zone doesn't populate anything
         with requests_mock() as mock:
@@ -62,7 +62,7 @@ class TestEdgeDnsProvider(TestCase):
 
             zone = Zone('unit.tests.', [])
             provider.populate(zone)
-            self.assertEquals(set(), zone.records)
+            self.assertEqual(set(), zone.records)
 
         # No diffs == no changes
         with requests_mock() as mock:
@@ -72,14 +72,14 @@ class TestEdgeDnsProvider(TestCase):
 
             zone = Zone('unit.tests.', [])
             provider.populate(zone)
-            self.assertEquals(18, len(zone.records))
+            self.assertEqual(18, len(zone.records))
             changes = self.expected.changes(zone, provider)
-            self.assertEquals(0, len(changes))
+            self.assertEqual(0, len(changes))
 
         # 2nd populate makes no network calls/all from cache
         again = Zone('unit.tests.', [])
         provider.populate(again)
-        self.assertEquals(18, len(again.records))
+        self.assertEqual(18, len(again.records))
 
         # bust the cache
         del provider._zone_records[zone.name]
@@ -100,7 +100,7 @@ class TestEdgeDnsProvider(TestCase):
             mock.delete(ANY, status_code=204)
 
             changes = provider.apply(plan)
-            self.assertEquals(31, changes)
+            self.assertEqual(31, changes)
 
         # Test against a zone that doesn't exist yet
         with requests_mock() as mock:
@@ -113,7 +113,7 @@ class TestEdgeDnsProvider(TestCase):
             mock.delete(ANY, status_code=204)
 
             changes = provider.apply(plan)
-            self.assertEquals(16, changes)
+            self.assertEqual(16, changes)
 
         # Test against a zone that doesn't exist yet, but gid not provided
         with requests_mock() as mock:
@@ -127,7 +127,7 @@ class TestEdgeDnsProvider(TestCase):
             mock.delete(ANY, status_code=204)
 
             changes = provider.apply(plan)
-            self.assertEquals(16, changes)
+            self.assertEqual(16, changes)
 
         # Test against a zone that doesn't exist, but cid not provided
 
@@ -144,4 +144,4 @@ class TestEdgeDnsProvider(TestCase):
                 changes = provider.apply(plan)
             except NameError as e:
                 expected = "contractId not specified to create zone"
-                self.assertEquals(str(e), expected)
+                self.assertEqual(str(e), expected)
