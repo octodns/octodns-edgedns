@@ -29,8 +29,10 @@
       fingerprint_type: 1
   - type: NS
     values:
-    - 6.2.3.4.
-    - 7.2.3.4.
+    - ns1.akam.net.
+    - ns2.akam.net.
+    - ns3.akam.net.
+    - ns4.akam.net.
   - type: CAA
     values:
     - flags: 0
