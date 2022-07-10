@@ -20,14 +20,17 @@ class TestEdgeDnsProvider(TestCase):
     source.populate(expected)
 
     # Our test suite differs a bit, add our NS and remove the simple one
-    expected.add_record(Record.new(expected, 'under', {
-        'ttl': 3600,
-        'type': 'NS',
-        'values': [
-            'ns1.unit.tests.',
-            'ns2.unit.tests.',
-        ]
-    }))
+    expected.add_record(
+        Record.new(
+            expected,
+            'under',
+            {
+                'ttl': 3600,
+                'type': 'NS',
+                'values': ['ns1.unit.tests.', 'ns2.unit.tests.'],
+            },
+        )
+    )
     for record in list(expected.records):
         if record.name == 'sub' and record._type == 'NS':
             expected._remove_record(record)
@@ -57,8 +60,11 @@ class TestEdgeDnsProvider(TestCase):
 
         # Non-existant zone doesn't populate anything
         with requests_mock() as mock:
-            mock.get(ANY, status_code=404,
-                     text='{"message": "Domain `foo.bar` not found"}')
+            mock.get(
+                ANY,
+                status_code=404,
+                text='{"message": "Domain `foo.bar` not found"}',
+            )
 
             zone = Zone('unit.tests.', [])
             provider.populate(zone)
@@ -85,8 +91,9 @@ class TestEdgeDnsProvider(TestCase):
         del provider._zone_records[zone.name]
 
     def test_apply(self):
-        provider = AkamaiProvider("test", "s", "akam.com", "atok", "ctok",
-                                  "cid", "gid")
+        provider = AkamaiProvider(
+            "test", "s", "akam.com", "atok", "ctok", "cid", "gid"
+        )
 
         # tests create update delete through previous state config json
         with requests_mock() as mock:
@@ -119,8 +126,9 @@ class TestEdgeDnsProvider(TestCase):
         with requests_mock() as mock:
             with open('tests/fixtures/edgedns-records-prev-other.json') as fh:
                 mock.get(ANY, status_code=404)
-            provider = AkamaiProvider("test", "s", "akam.com", "atok", "ctok",
-                                      "cid")
+            provider = AkamaiProvider(
+                "test", "s", "akam.com", "atok", "ctok", "cid"
+            )
             plan = provider.plan(self.expected)
             mock.post(ANY, status_code=201)
             mock.put(ANY, status_code=200)

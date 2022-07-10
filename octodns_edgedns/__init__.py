@@ -16,7 +16,6 @@ __VERSION__ = '0.0.1'
 
 
 class AkamaiClientNotFound(ProviderException):
-
     def __init__(self, resp):
         message = "404: Resource not found"
         super(AkamaiClientNotFound, self).__init__(message)
@@ -42,7 +41,7 @@ class AkamaiClient(object):
         sess.auth = EdgeGridAuth(
             client_token=client_token,
             client_secret=client_secret,
-            access_token=access_token
+            access_token=access_token,
         )
         self._sess = sess
 
@@ -91,8 +90,16 @@ class AkamaiClient(object):
 
         return result
 
-    def zone_recordset_get(self, zone, page=None, pageSize=None, search=None,
-                           showAll="true", sortBy="name", types=None):
+    def zone_recordset_get(
+        self,
+        zone,
+        page=None,
+        pageSize=None,
+        search=None,
+        showAll="true",
+        sortBy="name",
+        types=None,
+    ):
 
         params = {
             'page': page,
@@ -100,7 +107,7 @@ class AkamaiClient(object):
             'search': search,
             'showAll': showAll,
             'sortBy': sortBy,
-            'types': types
+            'types': types,
         }
 
         path = f'zones/{zone}/recordsets'
@@ -113,26 +120,50 @@ class AkamaiProvider(BaseProvider):
     SUPPORTS_GEO = False
     SUPPORTS_DYNAMIC = False
 
-    SUPPORTS = set(('A', 'AAAA', 'CNAME', 'MX', 'NAPTR', 'NS', 'PTR', 'SPF',
-                    'SRV', 'SSHFP', 'TXT'))
+    SUPPORTS = set(
+        (
+            'A',
+            'AAAA',
+            'CNAME',
+            'MX',
+            'NAPTR',
+            'NS',
+            'PTR',
+            'SPF',
+            'SRV',
+            'SSHFP',
+            'TXT',
+        )
+    )
 
-    def __init__(self, id, client_secret, host, access_token, client_token,
-                 contract_id=None, gid=None, *args, **kwargs):
+    def __init__(
+        self,
+        id,
+        client_secret,
+        host,
+        access_token,
+        client_token,
+        contract_id=None,
+        gid=None,
+        *args,
+        **kwargs,
+    ):
 
         self.log = getLogger(f'AkamaiProvider[{id}]')
         self.log.debug('__init__: id=%s, ')
         super(AkamaiProvider, self).__init__(id, *args, **kwargs)
 
-        self._dns_client = AkamaiClient(client_secret, host, access_token,
-                                        client_token)
+        self._dns_client = AkamaiClient(
+            client_secret, host, access_token, client_token
+        )
 
         self._zone_records = {}
         self._contractId = contract_id
         self._gid = gid
 
     def zone_records(self, zone):
-        """ returns records for a zone, looks for it if not present, or
-            returns empty [] if can't find a match
+        """returns records for a zone, looks for it if not present, or
+        returns empty [] if can't find a match
         """
         if zone.name not in self._zone_records:
             try:
@@ -165,8 +196,13 @@ class AkamaiProvider(BaseProvider):
         for name, types in values.items():
             for _type, records in types.items():
                 data_for = getattr(self, f'_data_for_{_type}')
-                record = Record.new(zone, name, data_for(_type, records[0]),
-                                    source=self, lenient=lenient)
+                record = Record.new(
+                    zone,
+                    name,
+                    data_for(_type, records[0]),
+                    source=self,
+                    lenient=lenient,
+                )
                 zone.add_record(record, lenient=lenient)
 
         exists = zone.name in self._zone_records
@@ -212,7 +248,7 @@ class AkamaiProvider(BaseProvider):
             "name": name,
             "type": record_type,
             "ttl": new.ttl,
-            "rdata": rdata
+            "rdata": rdata,
         }
 
         self._dns_client.record_create(zone, name, record_type, content)
@@ -245,7 +281,7 @@ class AkamaiProvider(BaseProvider):
             "name": name,
             "type": record_type,
             "ttl": new.ttl,
-            "rdata": rdata
+            "rdata": rdata,
         }
 
         self._dns_client.record_replace(zone, name, record_type, content)
@@ -257,7 +293,7 @@ class AkamaiProvider(BaseProvider):
         return {
             'ttl': records['ttl'],
             'type': _type,
-            'values': [r for r in records['rdata']]
+            'values': [r for r in records['rdata']],
         }
 
     _data_for_A = _data_for_multiple
@@ -267,88 +303,71 @@ class AkamaiProvider(BaseProvider):
 
     def _data_for_CNAME(self, _type, records):
         value = records['rdata'][0]
-        if (value[-1] != '.'):
+        if value[-1] != '.':
             value = f'{value}.'
 
-        return {
-            'ttl': records['ttl'],
-            'type': _type,
-            'value': value
-        }
+        return {'ttl': records['ttl'], 'type': _type, 'value': value}
 
     def _data_for_MX(self, _type, records):
         values = []
         for r in records['rdata']:
             preference, exchange = r.split(" ", 1)
-            values.append({
-                'preference': preference,
-                'exchange': exchange
-            })
-        return {
-            'ttl': records['ttl'],
-            'type': _type,
-            'values': values
-        }
+            values.append({'preference': preference, 'exchange': exchange})
+        return {'ttl': records['ttl'], 'type': _type, 'values': values}
 
     def _data_for_NAPTR(self, _type, records):
         values = []
         for r in records['rdata']:
             order, preference, flags, service, regexp, repl = r.split(' ', 5)
 
-            values.append({
-                'flags': flags[1:-1],
-                'order': order,
-                'preference': preference,
-                'regexp': regexp[1:-1],
-                'replacement': repl,
-                'service': service[1:-1]
-            })
-        return {
-            'type': _type,
-            'ttl': records['ttl'],
-            'values': values
-        }
+            values.append(
+                {
+                    'flags': flags[1:-1],
+                    'order': order,
+                    'preference': preference,
+                    'regexp': regexp[1:-1],
+                    'replacement': repl,
+                    'service': service[1:-1],
+                }
+            )
+        return {'type': _type, 'ttl': records['ttl'], 'values': values}
 
     def _data_for_PTR(self, _type, records):
 
         return {
             'ttl': records['ttl'],
             'type': _type,
-            'value': records['rdata'][0]
+            'value': records['rdata'][0],
         }
 
     def _data_for_SRV(self, _type, records):
         values = []
         for r in records['rdata']:
             priority, weight, port, target = r.split(' ', 3)
-            values.append({
-                'port': port,
-                'priority': priority,
-                'target': target,
-                'weight': weight
-            })
+            values.append(
+                {
+                    'port': port,
+                    'priority': priority,
+                    'target': target,
+                    'weight': weight,
+                }
+            )
 
-        return {
-            'type': _type,
-            'ttl': records['ttl'],
-            'values': values
-        }
+        return {'type': _type, 'ttl': records['ttl'], 'values': values}
 
     def _data_for_SSHFP(self, _type, records):
         values = []
         for r in records['rdata']:
             algorithm, fp_type, fingerprint = r.split(' ', 2)
-            values.append({
-                'algorithm': algorithm,
-                'fingerprint': fingerprint.lower(),
-                'fingerprint_type': fp_type
-            })
+            values.append(
+                {
+                    'algorithm': algorithm,
+                    'fingerprint': fingerprint.lower(),
+                    'fingerprint_type': fp_type,
+                }
+            )
 
-        return {
-            'type': _type,
-            'ttl': records['ttl'],
-            'values': values
-        }
+        return {'type': _type, 'ttl': records['ttl'], 'values': values}
 
     def _data_for_TXT(self, _type, records):
         values = []
@@ -356,11 +375,7 @@ class AkamaiProvider(BaseProvider):
             r = r[1:-1]
             values.append(r.replace(';', '\\;'))
 
-        return {
-            'ttl': records['ttl'],
-            'type': _type,
-            'values': values
-        }
+        return {'ttl': records['ttl'], 'type': _type, 'values': values}
 
     def _params_for_multiple(self, values):
         return [r for r in values]
@@ -439,8 +454,9 @@ class AkamaiProvider(BaseProvider):
 
         return rdata
 
-    def _build_zone_config(self, zone, _type="primary", comment=None,
-                           masters=[]):
+    def _build_zone_config(
+        self, zone, _type="primary", comment=None, masters=[]
+    ):
 
         if self._contractId is None:
             raise NameError("contractId not specified to create zone")
@@ -449,7 +465,7 @@ class AkamaiProvider(BaseProvider):
             "zone": zone,
             "type": _type,
             "comment": comment,
-            "masters": masters
+            "masters": masters,
         }
 
     def _get_values(self, data):
@@ -465,7 +481,7 @@ class AkamaiProvider(BaseProvider):
         name = name + '.' + zone
 
         # octodns's name for root is ''
-        if (name[0] == '.'):
+        if name[0] == '.':
             name = name[1:]
 
         return name
