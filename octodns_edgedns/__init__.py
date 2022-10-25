@@ -18,7 +18,7 @@ __VERSION__ = '0.0.1'
 class AkamaiClientNotFound(ProviderException):
     def __init__(self, resp):
         message = "404: Resource not found"
-        super(AkamaiClientNotFound, self).__init__(message)
+        super().__init__(message)
 
 
 class AkamaiClient(object):
@@ -151,7 +151,7 @@ class AkamaiProvider(BaseProvider):
 
         self.log = getLogger(f'AkamaiProvider[{id}]')
         self.log.debug('__init__: id=%s, ')
-        super(AkamaiProvider, self).__init__(id, *args, **kwargs)
+        super().__init__(id, *args, **kwargs)
 
         self._dns_client = AkamaiClient(
             client_secret, host, access_token, client_token
