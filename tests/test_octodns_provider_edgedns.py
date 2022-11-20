@@ -92,7 +92,14 @@ class TestEdgeDnsProvider(TestCase):
 
     def test_apply(self):
         provider = AkamaiProvider(
-            "test", "s", "akam.com", "atok", "ctok", "cid", "gid"
+            "test",
+            "s",
+            "akam.com",
+            "atok",
+            "ctok",
+            "cid",
+            "gid",
+            strict_supports=False,
         )
 
         # tests create update delete through previous state config json
@@ -127,7 +134,13 @@ class TestEdgeDnsProvider(TestCase):
             with open('tests/fixtures/edgedns-records-prev-other.json') as fh:
                 mock.get(ANY, status_code=404)
             provider = AkamaiProvider(
-                "test", "s", "akam.com", "atok", "ctok", "cid"
+                "test",
+                "s",
+                "akam.com",
+                "atok",
+                "ctok",
+                "cid",
+                strict_supports=False,
             )
             plan = provider.plan(self.expected)
             mock.post(ANY, status_code=201)
@@ -142,7 +155,9 @@ class TestEdgeDnsProvider(TestCase):
         with requests_mock() as mock:
             mock.get(ANY, status_code=404)
 
-            provider = AkamaiProvider("test", "s", "akam.com", "atok", "ctok")
+            provider = AkamaiProvider(
+                "test", "s", "akam.com", "atok", "ctok", strict_supports=False
+            )
             plan = provider.plan(self.expected)
             mock.post(ANY, status_code=201)
             mock.put(ANY, status_code=200)
