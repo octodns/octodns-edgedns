@@ -119,6 +119,7 @@ class AkamaiClient(object):
 class AkamaiProvider(BaseProvider):
     SUPPORTS_GEO = False
     SUPPORTS_DYNAMIC = False
+    SUPPORTS_MULTIVALUE_PTR = True
 
     SUPPORTS = set(
         (
@@ -299,6 +300,7 @@ class AkamaiProvider(BaseProvider):
     _data_for_A = _data_for_multiple
     _data_for_AAAA = _data_for_multiple
     _data_for_NS = _data_for_multiple
+    _data_for_PTR = _data_for_multiple
     _data_for_SPF = _data_for_multiple
 
     def _data_for_CNAME(self, _type, records):
@@ -331,14 +333,6 @@ class AkamaiProvider(BaseProvider):
                 }
             )
         return {'type': _type, 'ttl': records['ttl'], 'values': values}
-
-    def _data_for_PTR(self, _type, records):
-
-        return {
-            'ttl': records['ttl'],
-            'type': _type,
-            'value': records['rdata'][0],
-        }
 
     def _data_for_SRV(self, _type, records):
         values = []
@@ -386,9 +380,9 @@ class AkamaiProvider(BaseProvider):
     _params_for_A = _params_for_multiple
     _params_for_AAAA = _params_for_multiple
     _params_for_NS = _params_for_multiple
+    _params_for_PTR = _params_for_multiple
 
     _params_for_CNAME = _params_for_single
-    _params_for_PTR = _params_for_single
 
     def _params_for_MX(self, values):
         rdata = []
