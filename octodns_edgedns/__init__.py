@@ -2,15 +2,16 @@
 #
 #
 
-from akamai.edgegrid import EdgeGridAuth
 from collections import defaultdict
 from logging import getLogger
-from requests import Session
 from urllib.parse import urljoin
 
-from octodns.record import Record
+from akamai.edgegrid import EdgeGridAuth
+from requests import Session
+
 from octodns.provider import ProviderException
 from octodns.provider.base import BaseProvider
+from octodns.record import Record
 
 __VERSION__ = '0.0.2'
 
@@ -34,7 +35,6 @@ class AkamaiClient(object):
     '''
 
     def __init__(self, client_secret, host, access_token, client_token):
-
         self.base = "https://" + host + "/config-dns/v2/"
 
         sess = Session()
@@ -46,7 +46,6 @@ class AkamaiClient(object):
         self._sess = sess
 
     def _request(self, method, path, params=None, data=None, v1=False):
-
         url = urljoin(self.base, path)
         resp = self._sess.request(method, url, params=params, json=data)
 
@@ -100,7 +99,6 @@ class AkamaiClient(object):
         sortBy="name",
         types=None,
     ):
-
         params = {
             'page': page,
             'pageSize': pageSize,
@@ -149,7 +147,6 @@ class AkamaiProvider(BaseProvider):
         *args,
         **kwargs,
     ):
-
         self.log = getLogger(f'AkamaiProvider[{id}]')
         self.log.debug('__init__: id=%s, ')
         super().__init__(id, *args, **kwargs)
@@ -182,7 +179,6 @@ class AkamaiProvider(BaseProvider):
 
         values = defaultdict(lambda: defaultdict(list))
         for record in self.zone_records(zone):
-
             _type = record.get('type')
             # Akamai sends down prefix.zonename., while octodns expects prefix
             _name = record.get('name').split("." + zone.name[:-1], 1)[0]
@@ -234,7 +230,6 @@ class AkamaiProvider(BaseProvider):
         self._zone_records.pop(desired.name, None)
 
     def _apply_Create(self, change):
-
         new = change.new
         record_type = new._type
 
@@ -257,7 +252,6 @@ class AkamaiProvider(BaseProvider):
         return
 
     def _apply_Delete(self, change):
-
         zone = change.existing.zone.name[:-1]
         name = self._set_full_name(change.existing.name, zone)
         record_type = change.existing._type
@@ -267,7 +261,6 @@ class AkamaiProvider(BaseProvider):
         return
 
     def _apply_Update(self, change):
-
         new = change.new
         record_type = new._type
 
@@ -290,7 +283,6 @@ class AkamaiProvider(BaseProvider):
         return
 
     def _data_for_multiple(self, _type, records):
-
         return {
             'ttl': records['ttl'],
             'type': _type,
@@ -451,7 +443,6 @@ class AkamaiProvider(BaseProvider):
     def _build_zone_config(
         self, zone, _type="primary", comment=None, masters=[]
     ):
-
         if self._contractId is None:
             raise NameError("contractId not specified to create zone")
 
@@ -463,7 +454,6 @@ class AkamaiProvider(BaseProvider):
         }
 
     def _get_values(self, data):
-
         try:
             vals = data['values']
         except KeyError:
