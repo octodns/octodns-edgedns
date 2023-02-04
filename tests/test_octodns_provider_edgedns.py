@@ -3,12 +3,14 @@
 #
 
 from os.path import dirname, join
-from requests import HTTPError
-from requests_mock import ANY, mock as requests_mock
 from unittest import TestCase
 
-from octodns.record import Record
+from requests import HTTPError
+from requests_mock import ANY
+from requests_mock import mock as requests_mock
+
 from octodns.provider.yaml import YamlProvider
+from octodns.record import Record
 from octodns.zone import Zone
 
 from octodns_edgedns import AkamaiProvider
@@ -72,7 +74,6 @@ class TestEdgeDnsProvider(TestCase):
 
         # No diffs == no changes
         with requests_mock() as mock:
-
             with open('tests/fixtures/edgedns-records.json') as fh:
                 mock.get(ANY, text=fh.read())
 
@@ -104,7 +105,6 @@ class TestEdgeDnsProvider(TestCase):
 
         # tests create update delete through previous state config json
         with requests_mock() as mock:
-
             with open('tests/fixtures/edgedns-records-prev.json') as fh:
                 mock.get(ANY, text=fh.read())
 
