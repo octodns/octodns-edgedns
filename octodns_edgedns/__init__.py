@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 from akamai.edgegrid import EdgeGridAuth
 from requests import Session
 
+from octodns import __VERSION__ as octodns_version
 from octodns.provider import ProviderException
 from octodns.provider.base import BaseProvider
 from octodns.record import Record
@@ -38,6 +39,11 @@ class AkamaiClient(object):
         self.base = "https://" + host + "/config-dns/v2/"
 
         sess = Session()
+        sess.headers.update(
+            {
+                'User-Agent': f'octodns/{octodns_version} octodns-edgedns/{__VERSION__}'
+            }
+        )
         sess.auth = EdgeGridAuth(
             client_token=client_token,
             client_secret=client_secret,
