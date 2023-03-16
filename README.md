@@ -57,7 +57,7 @@ The contract_id paramater is optional, and only required for creating a new zone
 
 #### Records
 
-AkamaiProvider supports A, AAAA, CNAME, MX, NAPTR, NS, PTR, SPF, SRV, SSHFP, and TXT.
+AkamaiProvider supports A, AAAA, CAA, CNAME, MX, NAPTR, NS, PTR, SPF, SRV, SSHFP, and TXT.
 
 #### Dynamic
 

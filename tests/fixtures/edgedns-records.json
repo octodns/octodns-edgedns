@@ -46,6 +46,14 @@
         },
         {
             "rdata": [
+                "0 issue ca.unit.tests"
+            ],
+            "type": "CAA",
+            "name": "unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
                 "1.2.3.4",
                 "1.2.3.5"
             ],
@@ -167,7 +175,7 @@
         }
     ],
     "metadata": {
-        "totalElements": 18,
+        "totalElements": 19,
         "showAll": true
     }
 }
