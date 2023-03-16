@@ -129,6 +129,7 @@ class AkamaiProvider(BaseProvider):
         (
             'A',
             'AAAA',
+            'CAA',
             'CNAME',
             'MX',
             'NAPTR',
@@ -301,6 +302,13 @@ class AkamaiProvider(BaseProvider):
     _data_for_PTR = _data_for_multiple
     _data_for_SPF = _data_for_multiple
 
+    def _data_for_CAA(self, _type, records):
+        values = []
+        for r in records['rdata']:
+            flags, tag, value = r.split(" ", 2)
+            values.append({'flags': flags, 'tag': tag, 'value': value})
+        return {'ttl': records['ttl'], 'type': _type, 'values': values}
+
     def _data_for_CNAME(self, _type, records):
         value = records['rdata'][0]
         if value[-1] != '.':
@@ -381,6 +389,17 @@ class AkamaiProvider(BaseProvider):
     _params_for_PTR = _params_for_multiple
 
     _params_for_CNAME = _params_for_single
+
+    def _params_for_CAA(self, values):
+        rdata = []
+
+        for r in values:
+            flags = r['flags']
+            tag = r['tag']
+            value = r['value']
+            rdata.append(f'{flags} {tag} {value}')
+
+        return rdata
 
     def _params_for_MX(self, values):
         rdata = []
