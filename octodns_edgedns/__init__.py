@@ -460,7 +460,18 @@ class AkamaiProvider(BaseProvider):
         rdata = []
 
         for r in values:
-            txt = "\"" + r.replace('\\;', ';') + "\""
+            r = r.replace('\\;', ';')
+
+            # Split TXT record values longer than 255 bytes
+            rBytes = r.encode('utf-8')
+            if len(rBytes) > 255:
+                chunks = [
+                    rBytes[i : i + 255].decode('utf-8')
+                    for i in range(0, len(rBytes), 255)
+                ]
+                r = '" "'.join(chunks)
+
+            txt = "\"" + r + "\""
             rdata.append(txt)
 
         return rdata

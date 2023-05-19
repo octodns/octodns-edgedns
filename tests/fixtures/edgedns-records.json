@@ -88,6 +88,14 @@
         },
         {
             "rdata": [
+                "\"v=DKIM1;t=s;p=MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtGYOXk57O5ZkxKRMuh3KBfMq7CccVz0iJ57kiPcpyHNrz7XuQX6Z/eUnj5gzQOGvtAPK7ht58Ao/Pyp9dfC8VgkZTEBiiOU3938FhxD1QmjTO8YTEjAMzfsIfp5ShNqKujw8nhLIFEIQw2uO2Pl/q2+3isuJYKdlFQ1iBirR+tAac+IvWUM1FXVau7eqHUASR1kSE\" \"yaR0BztmtAGsHo0+yLF+uL1WRgyJPDqD7SYa8v3qf+QMPQ7lCrgdAdWWUbOF++jsqNJh3Cj180YThWZsMybr8zd6fqdC62MOKnRb75EKBY8hZjSRH+cpMxQukjLNEJACsNcZHfJjfDhRzJwLva1dY5UeEQKpSptYwQ78ngXYoLHNRE4HfayKu2fffL7kCRS3YcKGI4FdSurIghhKnnE79kv9l2mu0l5q/3vQWG/TP9F1in6Uz3QCvhh/Pm2RMqw\" \"PAk0csgirEdjRkxg1Mlxe9pfNupYxPdESoSrAw2m329BX2HKfdTB1p6HB+zfSq0oHRcsTRJQVPg/iQEQUYYAg/ttQS0pkKDI0ZBaHjCR8w5VXatIKRSxgRVp80sIbLoOSRvJ5IMxPR/V6P4ZaHhfmvx3CQwpHPR9LVThbwTc55WPWGhOf1iF8nx18g6CVfW69usS0F2OKdZfpBJ+WAm2hgOG8izXkJnmSA4tgcsCAwEAAQ==\""
+            ],
+            "type": "TXT",
+            "name": "dkimtestselector._domainkey.unit.tests",
+            "ttl": 300
+        },
+        {
+            "rdata": [
                 "unit.tests."
             ],
             "type": "CNAME",
@@ -175,7 +183,7 @@
         }
     ],
     "metadata": {
-        "totalElements": 19,
+        "totalElements": 20,
         "showAll": true
     }
 }

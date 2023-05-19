@@ -79,14 +79,14 @@ class TestEdgeDnsProvider(TestCase):
 
             zone = Zone('unit.tests.', [])
             provider.populate(zone)
-            self.assertEqual(19, len(zone.records))
+            self.assertEqual(20, len(zone.records))
             changes = self.expected.changes(zone, provider)
             self.assertEqual(0, len(changes))
 
         # 2nd populate makes no network calls/all from cache
         again = Zone('unit.tests.', [])
         provider.populate(again)
-        self.assertEqual(19, len(again.records))
+        self.assertEqual(20, len(again.records))
 
         # bust the cache
         del provider._zone_records[zone.name]
@@ -114,7 +114,7 @@ class TestEdgeDnsProvider(TestCase):
             mock.delete(ANY, status_code=204)
 
             changes = provider.apply(plan)
-            self.assertEqual(32, changes)
+            self.assertEqual(34, changes)
 
         # Test against a zone that doesn't exist yet
         with requests_mock() as mock:
@@ -127,7 +127,7 @@ class TestEdgeDnsProvider(TestCase):
             mock.delete(ANY, status_code=204)
 
             changes = provider.apply(plan)
-            self.assertEqual(17, changes)
+            self.assertEqual(18, changes)
 
         # Test against a zone that doesn't exist yet, but gid not provided
         with requests_mock() as mock:
@@ -148,7 +148,7 @@ class TestEdgeDnsProvider(TestCase):
             mock.delete(ANY, status_code=204)
 
             changes = provider.apply(plan)
-            self.assertEqual(17, changes)
+            self.assertEqual(18, changes)
 
         # Test against a zone that doesn't exist, but cid not provided
 
@@ -168,3 +168,26 @@ class TestEdgeDnsProvider(TestCase):
             except NameError as e:
                 expected = "contractId not specified to create zone"
                 self.assertEqual(str(e), expected)
+
+    def test_long_txt_records(self):
+        provider = AkamaiProvider(
+            "test",
+            "s",
+            "akam.com",
+            "atok",
+            "ctok",
+            "cid",
+            "gid",
+            strict_supports=False,
+        )
+        output = AkamaiProvider._params_for_TXT(
+            provider,
+            [
+                "v=DKIM1\\;t=s\\;p=MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtGYOXk57O5ZkxKRMuh3KBfMq7CccVz0iJ57kiPcpyHNrz7XuQX6Z/eUnj5gzQOGvtAPK7ht58Ao/Pyp9dfC8VgkZTEBiiOU3938FhxD1QmjTO8YTEjAMzfsIfp5ShNqKujw8nhLIFEIQw2uO2Pl/q2+3isuJYKdlFQ1iBirR+tAac+IvWUM1FXVau7eqHUASR1kSEyaR0BztmtAGsHo0+yLF+uL1WRgyJPDqD7SYa8v3qf+QMPQ7lCrgdAdWWUbOF++jsqNJh3Cj180YThWZsMybr8zd6fqdC62MOKnRb75EKBY8hZjSRH+cpMxQukjLNEJACsNcZHfJjfDhRzJwLva1dY5UeEQKpSptYwQ78ngXYoLHNRE4HfayKu2fffL7kCRS3YcKGI4FdSurIghhKnnE79kv9l2mu0l5q/3vQWG/TP9F1in6Uz3QCvhh/Pm2RMqwPAk0csgirEdjRkxg1Mlxe9pfNupYxPdESoSrAw2m329BX2HKfdTB1p6HB+zfSq0oHRcsTRJQVPg/iQEQUYYAg/ttQS0pkKDI0ZBaHjCR8w5VXatIKRSxgRVp80sIbLoOSRvJ5IMxPR/V6P4ZaHhfmvx3CQwpHPR9LVThbwTc55WPWGhOf1iF8nx18g6CVfW69usS0F2OKdZfpBJ+WAm2hgOG8izXkJnmSA4tgcsCAwEAAQ=="
+            ],
+        )
+        # Test that TXT record values longer than 255 characters are split
+        expected = [
+            "\"v=DKIM1;t=s;p=MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtGYOXk57O5ZkxKRMuh3KBfMq7CccVz0iJ57kiPcpyHNrz7XuQX6Z/eUnj5gzQOGvtAPK7ht58Ao/Pyp9dfC8VgkZTEBiiOU3938FhxD1QmjTO8YTEjAMzfsIfp5ShNqKujw8nhLIFEIQw2uO2Pl/q2+3isuJYKdlFQ1iBirR+tAac+IvWUM1FXVau7eqHUASR1kSE\" \"yaR0BztmtAGsHo0+yLF+uL1WRgyJPDqD7SYa8v3qf+QMPQ7lCrgdAdWWUbOF++jsqNJh3Cj180YThWZsMybr8zd6fqdC62MOKnRb75EKBY8hZjSRH+cpMxQukjLNEJACsNcZHfJjfDhRzJwLva1dY5UeEQKpSptYwQ78ngXYoLHNRE4HfayKu2fffL7kCRS3YcKGI4FdSurIghhKnnE79kv9l2mu0l5q/3vQWG/TP9F1in6Uz3QCvhh/Pm2RMqw\" \"PAk0csgirEdjRkxg1Mlxe9pfNupYxPdESoSrAw2m329BX2HKfdTB1p6HB+zfSq0oHRcsTRJQVPg/iQEQUYYAg/ttQS0pkKDI0ZBaHjCR8w5VXatIKRSxgRVp80sIbLoOSRvJ5IMxPR/V6P4ZaHhfmvx3CQwpHPR9LVThbwTc55WPWGhOf1iF8nx18g6CVfW69usS0F2OKdZfpBJ+WAm2hgOG8izXkJnmSA4tgcsCAwEAAQ==\""
+        ]
+        self.assertEqual(output, expected)
