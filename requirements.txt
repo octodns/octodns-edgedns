@@ -3,7 +3,7 @@ PyYAML==6.0
 certifi==2023.5.7
 cffi==1.15.1
 charset-normalizer==3.1.0
-cryptography==40.0.2
+cryptography==41.0.1
 dnspython==2.3.0
 edgegrid-python==1.3.1
 fqdn==1.5.1
@@ -11,7 +11,7 @@ idna==3.4
 natsort==8.3.1
 ndg-httpsclient==0.5.1
 octodns==0.9.21
-pyOpenSSL==23.1.1
+pyOpenSSL==23.2.0
 pyasn1==0.5.0
 pycparser==2.21
 python-dateutil==2.8.2
