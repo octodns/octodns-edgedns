@@ -96,6 +96,23 @@ class AkamaiClient(object):
 
         return result
 
+    def zone_changelist_create(self, zone, overwrite=False):
+        path = f'changelists?zone={zone}'
+
+        if overwrite:
+            path += '&overwrite=stale'
+
+        result = self._request('POST', path, data={})
+
+        return result
+
+    def zone_changelist_submit(self, zone):
+        path = f'changelists/{zone}/submit'
+
+        result = self._request('POST', path, data={})
+
+        return result
+
     def zone_recordset_get(
         self,
         zone,
@@ -229,6 +246,11 @@ class AkamaiProvider(BaseProvider):
             self.log.info("zone not found, creating zone")
             params = self._build_zone_config(zone_name)
             self._dns_client.zone_create(self._contractId, params, self._gid)
+            self.log.info(
+                "zone created, generating SOA and NS records (required)."
+            )
+            self._dns_client.zone_changelist_create(zone_name, True)
+            self._dns_client.zone_changelist_submit(zone_name)
 
         for change in changes:
             class_name = change.__class__.__name__
