@@ -100,6 +100,7 @@ class TestEdgeDnsProvider(TestCase):
             "ctok",
             "cid",
             "gid",
+            "Managed by OctoDNS.",
             strict_supports=False,
         )
 
