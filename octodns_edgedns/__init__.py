@@ -1,7 +1,6 @@
 #
 #
 #
-
 from collections import defaultdict
 from logging import getLogger
 from urllib.parse import urljoin
@@ -36,7 +35,9 @@ class AkamaiClient(object):
 
     '''
 
-    def __init__(self, client_secret, host, access_token, client_token):
+    def __init__(
+        self, client_secret, host, access_token, client_token, comment
+    ):
         self.base = "https://" + host + "/config-dns/v2/"
 
         sess = Session()
@@ -51,6 +52,7 @@ class AkamaiClient(object):
             access_token=access_token,
         )
         self._sess = sess
+        self.comment = comment
 
     def _request(self, method, path, params=None, data=None, v1=False):
         url = urljoin(self.base, path)
@@ -93,6 +95,21 @@ class AkamaiClient(object):
             path += f'&gid={gid}'
 
         result = self._request('POST', path, data=params)
+
+        return result
+
+    def zone_changelist_create(self, zone):
+        path = f'changelists?zone={zone}'
+        result = self._request('POST', path, data={})
+
+        return result
+
+    def zone_changelist_submit(self, zone):
+        path = f'changelists/{zone}/submit'
+
+        result = self._request(
+            'POST', path, data={}, params={"comment": self.comment}
+        )
 
         return result
 
@@ -152,6 +169,7 @@ class AkamaiProvider(BaseProvider):
         client_token,
         contract_id=None,
         gid=None,
+        comment=None,
         *args,
         **kwargs,
     ):
@@ -160,7 +178,7 @@ class AkamaiProvider(BaseProvider):
         super().__init__(id, *args, **kwargs)
 
         self._dns_client = AkamaiClient(
-            client_secret, host, access_token, client_token
+            client_secret, host, access_token, client_token, comment
         )
 
         self._zone_records = {}
@@ -229,6 +247,11 @@ class AkamaiProvider(BaseProvider):
             self.log.info("zone not found, creating zone")
             params = self._build_zone_config(zone_name)
             self._dns_client.zone_create(self._contractId, params, self._gid)
+            self.log.info(
+                "zone created, generating SOA and NS records (required)."
+            )
+            self._dns_client.zone_changelist_create(zone_name)
+            self._dns_client.zone_changelist_submit(zone_name)
 
         for change in changes:
             class_name = change.__class__.__name__

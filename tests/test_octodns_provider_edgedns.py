@@ -4,6 +4,7 @@
 
 from os.path import dirname, join
 from unittest import TestCase
+from unittest.mock import patch
 
 from requests import HTTPError
 from requests_mock import ANY
@@ -168,3 +169,54 @@ class TestEdgeDnsProvider(TestCase):
             except NameError as e:
                 expected = "contractId not specified to create zone"
                 self.assertEqual(str(e), expected)
+
+    def test_zone_changelist_submit_with_comment(self):
+        comment = "Managed by OctoDNS."
+        provider = AkamaiProvider(
+            "test",
+            "s",
+            "akam.com",
+            "atok",
+            "ctok",
+            "cid",
+            "gid",
+            comment,
+            strict_supports=False,
+        )
+
+        with patch.object(provider._dns_client, '_request') as mock_request:
+            provider._dns_client.zone_changelist_submit("foo.bar.test.com")
+
+            mock_request.assert_called_once_with(
+                'POST',
+                'changelists/foo.bar.test.com/submit',
+                data={},
+                params={"comment": comment},
+            )
+
+    def test_apply_method_calls_zone_changelist_submit(self):
+        comment = "Managed by OctoDNS."
+        provider = AkamaiProvider(
+            "test",
+            "s",
+            "akam.com",
+            "atok",
+            "ctok",
+            "cid",
+            "gid",
+            comment,
+            strict_supports=False,
+        )
+
+        with requests_mock() as mock:
+            mock.get(ANY, status_code=404)
+            mock.post(ANY, status_code=201)
+            mock.put(ANY, status_code=200)
+            mock.delete(ANY, status_code=204)
+
+            with patch.object(
+                provider._dns_client, 'zone_changelist_submit'
+            ) as mock_zone_submit:
+                plan = provider.plan(self.expected)
+                provider._apply(plan)
+                mock_zone_submit.assert_called_once()
