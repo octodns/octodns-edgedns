@@ -1,4 +1,4 @@
-## v0.0.3 - 2024-01-27 - Primary Zone Creation
+## v0.0.4 - 2024-01-27 - Primary Zone Creation
 
 * Support for creation of primary zones.
   Includes automatic creation of NS record set,
