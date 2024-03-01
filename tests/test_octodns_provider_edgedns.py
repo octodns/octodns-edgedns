@@ -40,7 +40,7 @@ class TestEdgeDnsProvider(TestCase):
             break
 
     def test_populate(self):
-        provider = AkamaiProvider("test", "secret", "akam.com", "atok", "ctok")
+        provider = AkamaiProvider("test", "secret", "akam.com", "atok", "ctok", use_changelist=False)
 
         # Bad Auth
         with requests_mock() as mock:
@@ -102,6 +102,7 @@ class TestEdgeDnsProvider(TestCase):
             "cid",
             "gid",
             strict_supports=False,
+            use_changelist=False
         )
 
         # tests create update delete through previous state config json
@@ -142,6 +143,7 @@ class TestEdgeDnsProvider(TestCase):
                 "ctok",
                 "cid",
                 strict_supports=False,
+                use_changelist=False,
             )
             plan = provider.plan(self.expected)
             mock.post(ANY, status_code=201)
@@ -157,7 +159,7 @@ class TestEdgeDnsProvider(TestCase):
             mock.get(ANY, status_code=404)
 
             provider = AkamaiProvider(
-                "test", "s", "akam.com", "atok", "ctok", strict_supports=False
+                "test", "s", "akam.com", "atok", "ctok", strict_supports=False, use_changelist=False
             )
             plan = provider.plan(self.expected)
             mock.post(ANY, status_code=201)
@@ -182,6 +184,7 @@ class TestEdgeDnsProvider(TestCase):
             "gid",
             comment,
             strict_supports=False,
+            use_changelist=False,
         )
 
         with patch.object(provider._dns_client, '_request') as mock_request:
@@ -206,6 +209,7 @@ class TestEdgeDnsProvider(TestCase):
             "gid",
             comment,
             strict_supports=False,
+            use_changelist=False,
         )
 
         with requests_mock() as mock:

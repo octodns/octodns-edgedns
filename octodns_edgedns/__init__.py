@@ -70,15 +70,34 @@ class AkamaiClient(object):
 
         return result
 
+    def changelist_record_create(self, zone, content):
+        path = f'changelists/{zone}/recordsets/add-change'
+        result = self._request('POST', path, data=dict(op="ADD", **content))
+
+        return result
+
     def record_delete(self, zone, name, record_type):
         path = f'zones/{zone}/names/{name}/types/{record_type}'
         result = self._request('DELETE', path)
 
         return result
 
+    def changelist_record_delete(self, zone, content):
+        path = f'changelists/{zone}/recordsets/add-change'
+        result = self._request('POST', path, data=dict(op="DELETE", **content))
+
+        return result
+
+
     def record_replace(self, zone, name, record_type, content):
         path = f'zones/{zone}/names/{name}/types/{record_type}'
         result = self._request('PUT', path, data=content)
+
+        return result
+
+    def changelist_record_replace(self, zone, content):
+        path = f'changelists/{zone}/recordsets/add-change'
+        result = self._request('POST', path, data=dict(op="EDIT", **content))
 
         return result
 
@@ -98,8 +117,12 @@ class AkamaiClient(object):
 
         return result
 
-    def zone_changelist_create(self, zone):
+    def zone_changelist_create(self, zone, overwrite=False):
         path = f'changelists?zone={zone}'
+
+        if overwrite:
+            path += "&overwrite=any"
+
         result = self._request('POST', path, data={})
 
         return result
@@ -170,6 +193,7 @@ class AkamaiProvider(BaseProvider):
         contract_id=None,
         gid=None,
         comment=None,
+        use_changelist=True,
         *args,
         **kwargs,
     ):
@@ -181,6 +205,7 @@ class AkamaiProvider(BaseProvider):
             client_secret, host, access_token, client_token, comment
         )
 
+        self.use_changelist = use_changelist
         self._zone_records = {}
         self._contractId = contract_id
         self._gid = gid
@@ -253,9 +278,15 @@ class AkamaiProvider(BaseProvider):
             self._dns_client.zone_changelist_create(zone_name)
             self._dns_client.zone_changelist_submit(zone_name)
 
+        if self.use_changelist:
+            self._dns_client.zone_changelist_create(zone_name, overwrite=True)
+
         for change in changes:
             class_name = change.__class__.__name__
             getattr(self, f'_apply_{class_name}')(change)
+
+        if self.use_changelist:
+            self._dns_client.zone_changelist_submit(zone_name)
 
         # Clear out the cache if any
         self._zone_records.pop(desired.name, None)
@@ -278,7 +309,10 @@ class AkamaiProvider(BaseProvider):
             "rdata": rdata,
         }
 
-        self._dns_client.record_create(zone, name, record_type, content)
+        if self.use_changelist:
+            self._dns_client.changelist_record_create(zone, content)
+        else:
+            self._dns_client.record_create(zone, name, record_type, content)
 
         return
 
@@ -287,7 +321,10 @@ class AkamaiProvider(BaseProvider):
         name = self._set_full_name(change.existing.name, zone)
         record_type = change.existing._type
 
-        self._dns_client.record_delete(zone, name, record_type)
+        if self.use_changelist:
+            self._dns_client.changelist_record_delete(zone, content)
+        else:
+            self._dns_client.record_delete(zone, name, record_type)
 
         return
 
@@ -309,7 +346,10 @@ class AkamaiProvider(BaseProvider):
             "rdata": rdata,
         }
 
-        self._dns_client.record_replace(zone, name, record_type, content)
+        if self.use_changelist:
+            self._dns_client.changelist_record_replace(zone, content)
+        else:
+            self._dns_client.record_replace(zone, name, record_type, content)
 
         return
 
