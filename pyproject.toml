@@ -15,5 +15,8 @@ filterwarnings = [
     'error',
     # TODO: remove once octodns 2.0 has been released
     'ignore:.*DEPRECATED.*2.0',
+    # akamai
+    'ignore:pkg_resources is deprecated',
+    'ignore:Deprecated call to `pkg_resources.declare_namespace',
 ]
 pythonpath = "."
