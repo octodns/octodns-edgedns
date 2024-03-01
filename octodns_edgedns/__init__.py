@@ -88,7 +88,6 @@ class AkamaiClient(object):
 
         return result
 
-
     def record_replace(self, zone, name, record_type, content):
         path = f'zones/{zone}/names/{name}/types/{record_type}'
         result = self._request('PUT', path, data=content)
