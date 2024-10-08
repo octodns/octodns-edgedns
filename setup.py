@@ -55,7 +55,7 @@ setup(
     long_description_content_type='text/markdown',
     name='octodns-edgedns',
     packages=find_packages(),
-    python_requires='>=3.6',
+    python_requires='>=3.9',
     tests_require=tests_require,
     url='https://github.com/octodns/octodns-edgedns',
     version=version(),
