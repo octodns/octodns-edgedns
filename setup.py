@@ -44,7 +44,7 @@ setup(
     },
     install_requires=(
         'edgegrid-python>=1.2.1',
-        'octodns>=0.9.14',
+        'octodns>=1.5.0',
         'requests>=2.27.0',
     ),
     license='MIT',
