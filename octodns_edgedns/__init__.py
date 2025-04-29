@@ -153,7 +153,6 @@ class AkamaiProvider(BaseProvider):
             'NAPTR',
             'NS',
             'PTR',
-            'SPF',
             'SRV',
             'SSHFP',
             'TXT',
@@ -324,7 +323,6 @@ class AkamaiProvider(BaseProvider):
     _data_for_AAAA = _data_for_multiple
     _data_for_NS = _data_for_multiple
     _data_for_PTR = _data_for_multiple
-    _data_for_SPF = _data_for_multiple
 
     def _data_for_CAA(self, _type, records):
         values = []
@@ -446,15 +444,6 @@ class AkamaiProvider(BaseProvider):
             rgx = "\"" + r['regexp'] + "\""
             rpl = r['replacement']
             rdata.append(f'{ordr} {prf} {flg} {srvc} {rgx} {rpl}')
-
-        return rdata
-
-    def _params_for_SPF(self, values):
-        rdata = []
-
-        for r in values:
-            txt = "\"" + r.replace('\\;', ';') + "\""
-            rdata.append(txt)
 
         return rdata
 

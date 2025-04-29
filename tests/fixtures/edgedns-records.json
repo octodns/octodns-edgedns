@@ -132,14 +132,6 @@
         },
         {
             "rdata": [
-                "\"v=spf1 ip4:192.168.0.1/16-all\""
-            ],
-            "type": "SPF",
-            "name": "spf.unit.tests",
-            "ttl": 600
-        },
-        {
-            "rdata": [
                 "ns1.unit.tests.",
                 "ns2.unit.tests."
             ],
