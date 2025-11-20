@@ -12,6 +12,10 @@ from octodns import __VERSION__ as octodns_version
 from octodns.provider import ProviderException
 from octodns.provider.base import BaseProvider
 from octodns.record import Record
+from octodns.record.ds import DsRecord, DsValue
+from octodns.record.https import HttpsValue
+from octodns.record.loc import LocValue
+from octodns.record.sshfp import SshfpRecord
 
 # TODO: remove __VERSION__ with the next major version release
 __version__ = __VERSION__ = '1.0.0'
@@ -239,8 +243,6 @@ class AkamaiProvider(BaseProvider):
 
     def _process_desired_zone(self, desired):
         """Normalize DS and SSHFP digests/fingerprints to lowercase for case-insensitive comparison"""
-        from octodns.record.ds import DsRecord
-        from octodns.record.sshfp import SshfpRecord
 
         for record in desired.records:
             if isinstance(record, DsRecord):
@@ -429,7 +431,6 @@ class AkamaiProvider(BaseProvider):
         return {'ttl': records['ttl'], 'type': _type, 'values': values}
 
     def _data_for_HTTPS(self, _type, records):
-        from octodns.record.https import HttpsValue
 
         values = []
         for r in records['rdata']:
@@ -440,7 +441,6 @@ class AkamaiProvider(BaseProvider):
         return {'ttl': records['ttl'], 'type': _type, 'values': values}
 
     def _data_for_DS(self, _type, records):
-        from octodns.record.ds import DsValue
 
         values = []
         for r in records['rdata']:
@@ -455,7 +455,6 @@ class AkamaiProvider(BaseProvider):
         return {'ttl': records['ttl'], 'type': _type, 'values': values}
 
     def _data_for_LOC(self, _type, records):
-        from octodns.record.loc import LocValue
 
         values = []
         for r in records['rdata']:
