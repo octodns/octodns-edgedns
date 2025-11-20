@@ -1,6 +1,6 @@
 {
     "recordsets": [
-                {
+        {
             "rdata": [
                 "10 20 30 foo-1.other.tests.",
                 "12 20 30 foo-2.other.tests."
@@ -114,14 +114,6 @@
             "type": "PTR",
             "name": "ptr.old.other.tests",
             "ttl": 300
-        },
-        {
-            "rdata": [
-                "\"v=spf1 ip4:192.168.0.1/16-all\""
-            ],
-            "type": "SPF",
-            "name": "spf.old.other.tests",
-            "ttl": 600
         },
         {
             "rdata": [

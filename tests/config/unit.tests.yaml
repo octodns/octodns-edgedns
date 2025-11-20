@@ -65,12 +65,36 @@ dname:
   ttl: 300
   type: DNAME
   value: unit.tests.
+ds:
+  ttl: 3600
+  type: DS
+  values:
+  - algorithm: 5
+    digest: 2bb183af5f22588179a53b0a98631fad1a292118
+    digest_type: 1
+    key_tag: 60485
 excluded:
   octodns:
     excluded:
     - test
   type: CNAME
   value: unit.tests.
+https:
+  ttl: 300
+  type: HTTPS
+  values:
+  - svcparams:
+      alpn:
+      - h2
+      - h3
+      port: '443'
+    svcpriority: 1
+    targetname: example.com.
+  - svcparams:
+      alpn:
+      - h2
+    svcpriority: 2
+    targetname: backup.example.com.
 ignored:
   octodns:
     ignored: true
@@ -147,6 +171,16 @@ sub:
   values:
   - 6.2.3.4.
   - 7.2.3.4.
+svcb:
+  ttl: 300
+  type: SVCB
+  values:
+  - svcparams:
+      alpn:
+      - h2
+      - h3
+    svcpriority: 1
+    targetname: svc.example.com.
 txt:
   ttl: 600
   type: TXT

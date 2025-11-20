@@ -18,8 +18,8 @@ Pinning specific versions or SHAs is recommended to avoid unplanned upgrades.
 
 ```
 # Start with the latest versions and don't just copy what's here
-octodns==0.9.14
-octodns-edgedns==0.0.1
+octodns==1.5.0
+octodns-edgedns==1.1.0
 ```
 
 ##### SHAs
@@ -40,7 +40,7 @@ providers:
     host: env/AKAMAI_HOST
     access_token: env/AKAMAI_ACCESS_TOKEN
     client_token: env/AKAMAI_CLIENT_TOKEN
-    #contract_id: env/AKAMAI_CONTRACT_ID (optional)
+    contract_id: env/AKAMAI_CONTRACT_ID
 ```
 
 The first four variables above can be hidden in environment variables and octoDNS will automatically search for them in the shell. It is possible to also hard-code into the config file: eg, contract_id.
@@ -57,7 +57,7 @@ The contract_id paramater is optional, and only required for creating a new zone
 
 #### Records
 
-AkamaiProvider supports A, AAAA, CAA, CNAME, MX, NAPTR, NS, PTR, SPF, SRV, SSHFP, and TXT.
+AkamaiProvider supports A, AAAA, CAA, CNAME, DS, HTTPS, LOC, MX, NAPTR, NS, PTR, SRV, SSHFP, SVCB, and TXT.
 
 #### Dynamic
 

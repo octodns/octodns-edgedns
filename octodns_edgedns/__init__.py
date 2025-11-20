@@ -14,7 +14,7 @@ from octodns.provider.base import BaseProvider
 from octodns.record import Record
 
 # TODO: remove __VERSION__ with the next major version release
-__version__ = __VERSION__ = '1.0.0'
+__version__ = __VERSION__ = '1.1.0'
 
 
 class AkamaiClientNotFound(ProviderException):
@@ -25,10 +25,10 @@ class AkamaiClientNotFound(ProviderException):
 
 class AkamaiClient(object):
     '''
-    Client for making calls to Akamai Fast DNS API using Python Requests
+    Client for making calls to Akamai EdgeDNS API using Python Requests
 
     Edge DNS Zone Management API V2, found here:
-    https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html
+    https://techdocs.akamai.com/edge-dns/reference/edge-dns-api
 
     Info on Python Requests library:
     https://2.python-requests.org/en/master/
@@ -149,12 +149,16 @@ class AkamaiProvider(BaseProvider):
             'AAAA',
             'CAA',
             'CNAME',
+            'DS',
+            'HTTPS',
+            'LOC',
             'MX',
             'NAPTR',
             'NS',
             'PTR',
             'SRV',
             'SSHFP',
+            'SVCB',
             'TXT',
         )
     )
@@ -232,6 +236,26 @@ class AkamaiProvider(BaseProvider):
         self.log.info('populate:   found %s records, exists=%s', found, exists)
 
         return exists
+
+    def _process_desired_zone(self, desired):
+        """Normalize DS and SSHFP digests/fingerprints to lowercase for case-insensitive comparison"""
+        from octodns.record.ds import DsRecord
+        from octodns.record.sshfp import SshfpRecord
+        
+        for record in desired.records:
+            if isinstance(record, DsRecord):
+                # Normalize digest to lowercase for each DS value
+                for value in record.values:
+                    # Force set the digest attribute to lowercase using object.__setattr__
+                    # This works around the immutability of DsValue objects
+                    object.__setattr__(value, 'digest', value.digest.lower())
+            elif isinstance(record, SshfpRecord):
+                # Normalize fingerprint to lowercase for each SSHFP value
+                for value in record.values:
+                    # Force set the fingerprint attribute to lowercase
+                    object.__setattr__(value, 'fingerprint', value.fingerprint.lower())
+        
+        return super()._process_desired_zone(desired)
 
     def _apply(self, plan):
         desired = plan.desired
@@ -328,6 +352,9 @@ class AkamaiProvider(BaseProvider):
         values = []
         for r in records['rdata']:
             flags, tag, value = r.split(" ", 2)
+            # Strip surrounding quotes from value if present
+            if value.startswith('"') and value.endswith('"'):
+                value = value[1:-1]
             values.append({'flags': flags, 'tag': tag, 'value': value})
         return {'ttl': records['ttl'], 'type': _type, 'values': values}
 
@@ -399,6 +426,45 @@ class AkamaiProvider(BaseProvider):
 
         return {'ttl': records['ttl'], 'type': _type, 'values': values}
 
+    def _data_for_HTTPS(self, _type, records):
+        from octodns.record.https import HttpsValue
+
+        values = []
+        for r in records['rdata']:
+            # Parse the rdata text format using HttpsValue
+            value_dict = HttpsValue.parse_rdata_text(r)
+            values.append(value_dict)
+
+        return {'ttl': records['ttl'], 'type': _type, 'values': values}
+
+    def _data_for_DS(self, _type, records):
+        from octodns.record.ds import DsValue
+
+        values = []
+        for r in records['rdata']:
+            # Parse the rdata text format using DsValue
+            # Convert to lowercase as configs typically use lowercase but Akamai stores uppercase
+            value_dict = DsValue.parse_rdata_text(r.lower())
+            # Ensure digest is normalized to lowercase for case-insensitive comparison
+            if 'digest' in value_dict:
+                value_dict['digest'] = value_dict['digest'].lower()
+            values.append(value_dict)
+
+        return {'ttl': records['ttl'], 'type': _type, 'values': values}
+
+    def _data_for_LOC(self, _type, records):
+        from octodns.record.loc import LocValue
+
+        values = []
+        for r in records['rdata']:
+            # Parse the rdata text format using LocValue
+            value_dict = LocValue.parse_rdata_text(r)
+            values.append(value_dict)
+
+        return {'ttl': records['ttl'], 'type': _type, 'values': values}
+
+    _data_for_SVCB = _data_for_HTTPS
+
     def _params_for_multiple(self, values):
         return [r for r in values]
 
@@ -464,8 +530,8 @@ class AkamaiProvider(BaseProvider):
             algorithm = r['algorithm']
             fp_type = r['fingerprint_type']
             fp = r['fingerprint']
-
-            rdata.append(f'{algorithm} {fp_type} {fp}')
+            # Use lowercase for consistency (fingerprint is case-insensitive)
+            rdata.append(f'{algorithm} {fp_type} {fp.lower()}')
 
         return rdata
 
@@ -477,6 +543,36 @@ class AkamaiProvider(BaseProvider):
             rdata.append(txt)
 
         return rdata
+
+    def _params_for_HTTPS(self, values):
+        rdata = []
+
+        for r in values:
+            # HttpsValue objects have a rdata_text property that formats them correctly
+            rdata.append(r.rdata_text)
+
+        return rdata
+
+    def _params_for_DS(self, values):
+        rdata = []
+
+        for r in values:
+            # DsValue objects have a rdata_text property that formats them correctly
+            # Use lowercase for consistency (digest is case-insensitive per RFC 4034)
+            rdata.append(r.rdata_text.lower())
+
+        return rdata
+
+    def _params_for_LOC(self, values):
+        rdata = []
+
+        for r in values:
+            # LocValue objects have a rdata_text property that formats them correctly
+            rdata.append(r.rdata_text)
+
+        return rdata
+
+    _params_for_SVCB = _params_for_HTTPS
 
     def _build_zone_config(
         self, zone, _type="primary", comment=None, masters=[]
