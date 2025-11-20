@@ -1,3 +1,18 @@
+## v1.1.0 - TBD - New DNS Record Types
+
+Changes:
+
+* Added support for DS (DNSSEC Delegation Signer) records
+* Added support for HTTPS (HTTPS Service Binding) records
+* Added support for LOC (Location) records
+* Added support for SVCB (Service Binding) records
+* DS record digests are now normalized to lowercase when reading from and writing
+  to Akamai EdgeDNS, ensuring case-insensitive comparison regardless of the case
+  used in configuration files
+* SSHFP record fingerprints are now normalized to lowercase when reading from and
+  writing to Akamai Edge DNS, ensuring case-insensitive comparison regardless of
+  the case used in configuration files
+
 ## v1.0.0 - 2024-04-29 - Long overdue 1.0
 
 Noteworthy Changes:
