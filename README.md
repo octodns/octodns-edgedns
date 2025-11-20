@@ -40,9 +40,9 @@ providers:
     host: env/AKAMAI_HOST
     access_token: env/AKAMAI_ACCESS_TOKEN
     client_token: env/AKAMAI_CLIENT_TOKEN
-    contract_id: env/AKAMAI_CONTRACT_ID
+    #contract_id: env/AKAMAI_CONTRACT_ID
 ```
-
+ 
 The first four variables above can be hidden in environment variables and octoDNS will automatically search for them in the shell. It is possible to also hard-code into the config file: eg, contract_id.
 
 The first four values can be found by generating credentials: https://control.akamai.com/

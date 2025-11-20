@@ -25,7 +25,7 @@ class AkamaiClientNotFound(ProviderException):
 
 class AkamaiClient(object):
     '''
-    Client for making calls to Akamai EdgeDNS API using Python Requests
+    Client for making calls to Akamai Edge DNS API using Python Requests
 
     Edge DNS Zone Management API V2, found here:
     https://techdocs.akamai.com/edge-dns/reference/edge-dns-api
