@@ -28,7 +28,7 @@ class AkamaiClient(object):
     Client for making calls to Akamai Fast DNS API using Python Requests
 
     Edge DNS Zone Management API V2, found here:
-    https://techdocs.akamai.com/edge-dns/reference/edge-dns-api
+    https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html
 
     Info on Python Requests library:
     https://2.python-requests.org/en/master/
