@@ -241,7 +241,7 @@ class AkamaiProvider(BaseProvider):
         """Normalize DS and SSHFP digests/fingerprints to lowercase for case-insensitive comparison"""
         from octodns.record.ds import DsRecord
         from octodns.record.sshfp import SshfpRecord
-        
+
         for record in desired.records:
             if isinstance(record, DsRecord):
                 # Normalize digest to lowercase for each DS value
@@ -253,8 +253,10 @@ class AkamaiProvider(BaseProvider):
                 # Normalize fingerprint to lowercase for each SSHFP value
                 for value in record.values:
                     # Force set the fingerprint attribute to lowercase
-                    object.__setattr__(value, 'fingerprint', value.fingerprint.lower())
-        
+                    object.__setattr__(
+                        value, 'fingerprint', value.fingerprint.lower()
+                    )
+
         return super()._process_desired_zone(desired)
 
     def _apply(self, plan):
