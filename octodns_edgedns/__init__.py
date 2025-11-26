@@ -149,12 +149,17 @@ class AkamaiProvider(BaseProvider):
             'AAAA',
             'CAA',
             'CNAME',
+            'DS',
+            'HTTPS',
+            'LOC',
             'MX',
             'NAPTR',
             'NS',
             'PTR',
             'SRV',
             'SSHFP',
+            'SVCB',
+            'TLSA',
             'TXT',
         )
     )
@@ -328,6 +333,8 @@ class AkamaiProvider(BaseProvider):
         values = []
         for r in records['rdata']:
             flags, tag, value = r.split(" ", 2)
+            # Remove surrounding quotes
+            value = value[1:-1]
             values.append({'flags': flags, 'tag': tag, 'value': value})
         return {'ttl': records['ttl'], 'type': _type, 'values': values}
 
@@ -391,6 +398,23 @@ class AkamaiProvider(BaseProvider):
 
         return {'type': _type, 'ttl': records['ttl'], 'values': values}
 
+    def _data_for_TLSA(self, _type, records):
+        values = []
+        for r in records['rdata']:
+            certificate_usage, selector, matching_type, certificate_data = (
+                r.split(' ', 3)
+            )
+            values.append(
+                {
+                    'certificate_usage': certificate_usage,
+                    'selector': selector,
+                    'matching_type': matching_type,
+                    'certificate_association_data': certificate_data.lower(),
+                }
+            )
+
+        return {'type': _type, 'ttl': records['ttl'], 'values': values}
+
     def _data_for_TXT(self, _type, records):
         values = []
         for r in records['rdata']:
@@ -398,6 +422,89 @@ class AkamaiProvider(BaseProvider):
             values.append(r.replace(';', '\\;'))
 
         return {'ttl': records['ttl'], 'type': _type, 'values': values}
+
+    def _data_for_DS(self, _type, records):
+        values = []
+        for r in records['rdata']:
+            key_tag, algorithm, digest_type, digest = r.split(' ', 3)
+            values.append(
+                {
+                    'key_tag': key_tag,
+                    'algorithm': algorithm,
+                    'digest_type': digest_type,
+                    'digest': digest.lower(),
+                }
+            )
+
+        return {'type': _type, 'ttl': records['ttl'], 'values': values}
+
+    def _data_for_HTTPS(self, _type, records):
+        values = []
+        for r in records['rdata']:
+            # HTTPS records use SVCB format: priority targetname [svcparams]
+            parts = r.split(' ', 2)
+            svcpriority = parts[0]
+            targetname = parts[1]
+
+            # Parse svcparams if present
+            svcparams = {}
+            if len(parts) > 2:
+                param_str = parts[2]
+                # Parse key=value pairs
+                for param in param_str.split(' '):
+                    if '=' in param:
+                        key, value = param.split('=', 1)
+                        # Handle list values (comma-separated)
+                        if ',' in value:
+                            svcparams[key] = value.split(',')
+                        # ipv4hint and ipv6hint are always lists in octoDNS
+                        elif key in ('ipv4hint', 'ipv6hint'):
+                            svcparams[key] = [value]
+                        else:
+                            svcparams[key] = value
+                    else:
+                        # Parameter without value
+                        svcparams[param] = None
+
+            values.append(
+                {
+                    'svcpriority': svcpriority,
+                    'targetname': targetname,
+                    'svcparams': svcparams,
+                }
+            )
+
+        return {'type': _type, 'ttl': records['ttl'], 'values': values}
+
+    def _data_for_LOC(self, _type, records):
+        values = []
+        for r in records['rdata']:
+            # LOC format: lat_deg lat_min lat_sec lat_dir long_deg long_min long_sec long_dir altitude size precision_horz precision_vert
+            # Values have 'm' suffix for meters
+            r = r.replace('m', '')
+            parts = r.split(' ')
+
+            values.append(
+                {
+                    'lat_degrees': int(parts[0]),
+                    'lat_minutes': int(parts[1]),
+                    'lat_seconds': float(parts[2]),
+                    'lat_direction': parts[3],
+                    'long_degrees': int(parts[4]),
+                    'long_minutes': int(parts[5]),
+                    'long_seconds': float(parts[6]),
+                    'long_direction': parts[7],
+                    'altitude': float(parts[8]),
+                    'size': float(parts[9]),
+                    'precision_horz': float(parts[10]),
+                    'precision_vert': float(parts[11]),
+                }
+            )
+
+        return {'type': _type, 'ttl': records['ttl'], 'values': values}
+
+    # SVCB uses the same format as HTTPS (RFC 9460)
+    _data_for_SVCB = _data_for_HTTPS
 
     def _params_for_multiple(self, values):
         return [r for r in values]
@@ -469,6 +576,20 @@ class AkamaiProvider(BaseProvider):
 
         return rdata
 
+    def _params_for_TLSA(self, values):
+        rdata = []
+        for r in values:
+            certificate_usage = r['certificate_usage']
+            selector = r['selector']
+            matching_type = r['matching_type']
+            certificate_data = r['certificate_association_data']
+
+            rdata.append(
+                f'{certificate_usage} {selector} {matching_type} {certificate_data}'
+            )
+
+        return rdata
+
     def _params_for_TXT(self, values):
         rdata = []
 
@@ -477,6 +598,71 @@ class AkamaiProvider(BaseProvider):
             rdata.append(txt)
 
         return rdata
+
+    def _params_for_DS(self, values):
+        rdata = []
+        for r in values:
+            key_tag = r['key_tag']
+            algorithm = r['algorithm']
+            digest_type = r['digest_type']
+            digest = r['digest']
+
+            rdata.append(f'{key_tag} {algorithm} {digest_type} {digest}')
+
+        return rdata
+
+    def _params_for_HTTPS(self, values):
+        rdata = []
+        for r in values:
+            svcpriority = r['svcpriority']
+            targetname = r['targetname']
+            svcparams = r.get('svcparams', {})
+
+            # Build the SVCB format string
+            parts = [str(svcpriority), targetname]
+
+            # Add svcparams in sorted order (by key)
+            for key in sorted(svcparams.keys()):
+                value = svcparams[key]
+                if value is None:
+                    # Parameter without value
+                    parts.append(key)
+                elif isinstance(value, list):
+                    # List values are comma-separated
+                    parts.append(f'{key}={",".join(value)}')
+                else:
+                    parts.append(f'{key}={value}')
+
+            rdata.append(' '.join(parts))
+
+        return rdata
+
+    def _params_for_LOC(self, values):
+        rdata = []
+        for r in values:
+            lat_deg = r['lat_degrees']
+            lat_min = r['lat_minutes']
+            lat_sec = r['lat_seconds']
+            lat_dir = r['lat_direction']
+            long_deg = r['long_degrees']
+            long_min = r['long_minutes']
+            long_sec = r['long_seconds']
+            long_dir = r['long_direction']
+            altitude = r['altitude']
+            size = r['size']
+            precision_horz = r['precision_horz']
+            precision_vert = r['precision_vert']
+
+            rdata.append(
+                f'{lat_deg} {lat_min} {lat_sec} {lat_dir} '
+                f'{long_deg} {long_min} {long_sec} {long_dir} '
+                f'{altitude}m {size}m {precision_horz}m {precision_vert}m'
+            )
+
+        return rdata
+
+    # SVCB uses the same format as HTTPS (RFC 9460)
+    _params_for_SVCB = _params_for_HTTPS
 
     def _build_zone_config(
         self, zone, _type="primary", comment=None, masters=[]

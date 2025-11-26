@@ -49,7 +49,7 @@ The first four values can be found by generating credentials: https://control.ak
 
 Configure > Organization > Manage APIs > New API Client for me
 
-Select appropriate group, and fill relevant fields.  For API Service Name, select DNS-Zone Record Management and then set appropriate Access level (Read-Write to make changes).  Then select the "New Credential" button to generate values for above
+Select appropriate group, and fill relevant fields. For API Service Name, select DNS-Zone Record Management and then set appropriate Access level (Read-Write to make changes). Then select the "New Credential" button to generate values for above
 
 The contract_id paramater is optional, and only required for creating a new zone. If the zone being managed already exists in Akamai for the user in question, then this paramater is not needed.
 
@@ -57,7 +57,7 @@ The contract_id paramater is optional, and only required for creating a new zone
 
 #### Records
 
-AkamaiProvider supports A, AAAA, CAA, CNAME, MX, NAPTR, NS, PTR, SPF, SRV, SSHFP, and TXT.
+AkamaiProvider supports A, AAAA, CAA, CNAME, DS, HTTPS, LOC, MX, NAPTR, NS, PTR, SRV, SSHFP, SVCB, TLSA, and TXT.
 
 #### Dynamic
 
