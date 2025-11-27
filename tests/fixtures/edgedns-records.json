@@ -1,186 +1,216 @@
 {
-  "recordsets": [
-    {
-      "rdata": ["10 20 30 foo-1.unit.tests.", "12 20 30 foo-2.unit.tests."],
-      "type": "SRV",
-      "name": "_srv._tcp.unit.tests",
-      "ttl": 600
-    },
-    {
-      "rdata": ["0 0 0 ."],
-      "type": "SRV",
-      "name": "_imap._tcp.unit.tests",
-      "ttl": 600
-    },
-    {
-      "rdata": ["0 0 0 ."],
-      "type": "SRV",
-      "name": "_pop3._tcp.unit.tests",
-      "ttl": 600
-    },
-    {
-      "rdata": [
-        "3 1 1 0c72ac70b745ac19998811b131d662c9ac69dbdbe7cb23e5b514b56664c5d3d6"
-      ],
-      "type": "TLSA",
-      "name": "_443._tcp.unit.tests",
-      "ttl": 600
-    },
-    {
-      "rdata": ["2601:644:500:e210:62f8:1dff:feb8:947a"],
-      "type": "AAAA",
-      "name": "aaaa.unit.tests",
-      "ttl": 600
-    },
-    {
-      "rdata": [
-        "ns1.akam.net.",
-        "ns2.akam.net.",
-        "ns3.akam.net.",
-        "ns4.akam.net."
-      ],
-      "type": "NS",
-      "name": "unit.tests",
-      "ttl": 3600
-    },
-    {
-      "rdata": ["0 issue \"ca.unit.tests\""],
-      "type": "CAA",
-      "name": "unit.tests",
-      "ttl": 3600
-    },
-    {
-      "rdata": ["1.2.3.4", "1.2.3.5"],
-      "type": "A",
-      "name": "unit.tests",
-      "ttl": 300
-    },
-    {
-      "rdata": [
-        "ns1.akam.net hostmaster.akamai.com 1489074932 86400 7200 604800 300"
-      ],
-      "type": "SOA",
-      "name": "unit.tests",
-      "ttl": 3600
-    },
-    {
-      "rdata": [
-        "1 1 7491973e5f8b39d5327cd4e08bc81b05f7710b49",
-        "1 1 bf6b6825d2977c511a475bbefb88aad54a92ac73"
-      ],
-      "type": "SSHFP",
-      "name": "unit.tests",
-      "ttl": 3600
-    },
-    {
-      "rdata": ["unit.tests."],
-      "type": "CNAME",
-      "name": "cname.unit.tests",
-      "ttl": 300
-    },
-    {
-      "rdata": [
-        "12345 8 2 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-        "54321 13 4 fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210"
-      ],
-      "type": "DS",
-      "name": "ds.unit.tests",
-      "ttl": 300
-    },
-    {
-      "rdata": ["unit.tests."],
-      "type": "CNAME",
-      "name": "excluded.unit.tests",
-      "ttl": 3600
-    },
-    {
-      "rdata": ["unit.tests."],
-      "type": "CNAME",
-      "name": "included.unit.tests",
-      "ttl": 3600
-    },
-    {
-      "rdata": [
-        "1 . alpn=h2,h3 no-default-alpn port=443",
-        "2 example.unit.tests. ipv4hint=1.2.3.4",
-        "0 ."
-      ],
-      "type": "HTTPS",
-      "name": "https.unit.tests",
-      "ttl": 300
-    },
-    {
-      "rdata": [
-        "10 smtp-4.unit.tests.",
-        "20 smtp-2.unit.tests.",
-        "30 smtp-3.unit.tests.",
-        "40 smtp-1.unit.tests."
-      ],
-      "type": "MX",
-      "name": "mx.unit.tests",
-      "ttl": 300
-    },
-    {
-      "rdata": [
-        "31 58 52.1 S 115 49 11.7 E 20m 10m 10m 2m",
-        "53 13 10 N 2 18 26 W 20m 10m 1000m 2m"
-      ],
-      "type": "LOC",
-      "name": "loc.unit.tests",
-      "ttl": 300
-    },
-    {
-      "rdata": [
-        "10 100 \"S\" \"SIP+D2U\" \"!^.*$!sip:info@bar.example.com!\" .",
-        "100 100 \"U\" \"SIP+D2U\" \"!^.*$!sip:info@bar.example.com!\" ."
-      ],
-      "type": "NAPTR",
-      "name": "naptr.unit.tests",
-      "ttl": 600
-    },
-    {
-      "rdata": ["foo.bar.com."],
-      "type": "PTR",
-      "name": "ptr.unit.tests",
-      "ttl": 300
-    },
-    {
-      "rdata": ["1 svc.unit.tests. alpn=http/1.1,h2"],
-      "type": "SVCB",
-      "name": "svcb.unit.tests",
-      "ttl": 300
-    },
-    {
-      "rdata": ["ns1.unit.tests.", "ns2.unit.tests."],
-      "type": "NS",
-      "name": "under.unit.tests",
-      "ttl": 3600
-    },
-    {
-      "rdata": [
-        "\"Bah bah black sheep\"",
-        "\"have you any wool.\"",
-        "\"v=DKIM1;k=rsa;s=email;h=sha256;p=A/kinda+of/long/string+with+numb3rs\""
-      ],
-      "type": "TXT",
-      "name": "txt.unit.tests",
-      "ttl": 600
-    },
-    {
-      "rdata": ["2.2.3.6"],
-      "type": "A",
-      "name": "www.unit.tests",
-      "ttl": 300
-    },
-    {
-      "rdata": ["2.2.3.6"],
-      "type": "A",
-      "name": "www.sub.unit.tests",
-      "ttl": 300
+    "recordsets": [
+        {
+            "rdata": [
+                "3 1 1 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+            ],
+            "type": "TLSA",
+            "name": "_443._tcp.unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "10 20 30 foo-1.unit.tests.",
+                "12 20 30 foo-2.unit.tests."
+            ],
+            "type": "SRV",
+            "name": "_srv._tcp.unit.tests",
+            "ttl": 600
+        },
+        {
+            "rdata": [
+                "0 0 0 ."
+            ],
+            "type": "SRV",
+            "name": "_imap._tcp.unit.tests",
+            "ttl": 600
+        },
+        {
+            "rdata": [
+                "0 0 0 ."
+            ],
+            "type": "SRV",
+            "name": "_pop3._tcp.unit.tests",
+            "ttl": 600
+        },
+        {
+            "rdata": [
+                "2601:644:500:e210:62f8:1dff:feb8:947a"
+            ],
+            "type": "AAAA",
+            "name": "aaaa.unit.tests",
+            "ttl": 600
+        },
+        {
+            "rdata": [
+                "ns1.akam.net.",
+                "ns2.akam.net.",
+                "ns3.akam.net.",
+                "ns4.akam.net."
+            ],
+            "type": "NS",
+            "name": "unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "0 issue \"ca.unit.tests\""
+            ],
+            "type": "CAA",
+            "name": "unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "1.2.3.4",
+                "1.2.3.5"
+            ],
+            "type": "A",
+            "name": "unit.tests",
+            "ttl": 300
+        },
+        {
+            "rdata": [
+                "ns1.akam.net hostmaster.akamai.com 1489074932 86400 7200 604800 300"
+            ],
+            "type": "SOA",
+            "name": "unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "1 1 7491973e5f8b39d5327cd4e08bc81b05f7710b49",
+                "1 1 bf6b6825d2977c511a475bbefb88aad54a92ac73"
+            ],
+            "type": "SSHFP",
+            "name": "unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "unit.tests."
+            ],
+            "type": "CNAME",
+            "name": "cname.unit.tests",
+            "ttl": 300
+        },
+        {
+            "rdata": [
+                "12345 8 2 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                "54321 13 2 fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210"
+            ],
+            "type": "DS",
+            "name": "ds.unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "unit.tests."
+            ],
+            "type": "CNAME",
+            "name": "excluded.unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "1 . alpn=h2,h3 ipv4hint=1.2.3.4 no-default-alpn port=443",
+                "0 ."
+            ],
+            "type": "HTTPS",
+            "name": "https.unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "unit.tests."
+            ],
+            "type": "CNAME",
+            "name": "included.unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "31 58 52.1 S 115 49 11.7 E 20m 10m 10m 2m",
+                "53 13 10 N 2 18 26 W 20m 10m 1000m 2m"
+            ],
+            "type": "LOC",
+            "name": "loc.unit.tests",
+            "ttl": 300
+        },
+        {
+            "rdata": [
+                "10 smtp-4.unit.tests.",
+                "20 smtp-2.unit.tests.",
+                "30 smtp-3.unit.tests.",
+                "40 smtp-1.unit.tests."
+            ],
+            "type": "MX",
+            "name": "mx.unit.tests",
+            "ttl": 300
+        },
+        {
+            "rdata": [
+                "10 100 \"S\" \"SIP+D2U\" \"!^.*$!sip:info@bar.example.com!\" .",
+                "100 100 \"U\" \"SIP+D2U\" \"!^.*$!sip:info@bar.example.com!\" ."
+            ],
+            "type": "NAPTR",
+            "name": "naptr.unit.tests",
+            "ttl": 600
+        },
+        {
+            "rdata": [
+                "foo.bar.com."
+            ],
+            "type": "PTR",
+            "name": "ptr.unit.tests",
+            "ttl": 300
+        },
+        {
+            "rdata": [
+                "1 . alpn=h2,h3"
+            ],
+            "type": "SVCB",
+            "name": "svcb.unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "ns1.unit.tests.",
+                "ns2.unit.tests."
+            ],
+            "type": "NS",
+            "name": "under.unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "\"Bah bah black sheep\"",
+                "\"have you any wool.\"",
+                "\"v=DKIM1;k=rsa;s=email;h=sha256;p=A/kinda+of/long/string+with+numb3rs\""
+            ],
+            "type": "TXT",
+            "name": "txt.unit.tests",
+            "ttl": 600
+        },
+        {
+            "rdata": [
+                "2.2.3.6"
+            ],
+            "type": "A",
+            "name": "www.unit.tests",
+            "ttl": 300
+        },
+        {
+            "rdata": [
+                "2.2.3.6"
+            ],
+            "type": "A",
+            "name": "www.sub.unit.tests",
+            "ttl": 300
+        }
+    ],
+    "metadata": {
+        "totalElements": 24,
+        "showAll": true
     }
-  ],
-  "metadata": {
-    "totalElements": 24,
-    "showAll": true
-  }
 }
