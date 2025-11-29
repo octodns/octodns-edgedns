@@ -25,6 +25,14 @@
     - flags: 0
       tag: issue
       value: ca.unit.tests
+_443._tcp:
+  ttl: 3600
+  type: TLSA
+  values:
+  - certificate_association_data: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+    certificate_usage: 3
+    matching_type: 1
+    selector: 1
 _imap._tcp:
   ttl: 600
   type: SRV
@@ -65,12 +73,41 @@ dname:
   ttl: 300
   type: DNAME
   value: unit.tests.
+ds:
+  ttl: 3600
+  type: DS
+  values:
+  - algorithm: 8
+    digest: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+    digest_type: 2
+    key_tag: 12345
+  - algorithm: 13
+    digest: fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210
+    digest_type: 2
+    key_tag: 54321
 excluded:
   octodns:
     excluded:
     - test
   type: CNAME
   value: unit.tests.
+https:
+  ttl: 3600
+  type: HTTPS
+  values:
+  - svcparams:
+      alpn:
+      - h2
+      - h3
+      ipv4hint:
+      - 1.2.3.4
+      no-default-alpn:
+      port: 443
+    svcpriority: 1
+    targetname: .
+  - svcparams: {}
+    svcpriority: 0
+    targetname: .
 ignored:
   octodns:
     ignored: true
@@ -147,6 +184,16 @@ sub:
   values:
   - 6.2.3.4.
   - 7.2.3.4.
+svcb:
+  ttl: 3600
+  type: SVCB
+  values:
+  - svcparams:
+      alpn:
+      - h2
+      - h3
+    svcpriority: 1
+    targetname: .
 txt:
   ttl: 600
   type: TXT

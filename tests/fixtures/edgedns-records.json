@@ -2,6 +2,14 @@
     "recordsets": [
         {
             "rdata": [
+                "3 1 1 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+            ],
+            "type": "TLSA",
+            "name": "_443._tcp.unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
                 "10 20 30 foo-1.unit.tests.",
                 "12 20 30 foo-2.unit.tests."
             ],
@@ -46,7 +54,7 @@
         },
         {
             "rdata": [
-                "0 issue ca.unit.tests"
+                "0 issue \"ca.unit.tests\""
             ],
             "type": "CAA",
             "name": "unit.tests",
@@ -88,10 +96,28 @@
         },
         {
             "rdata": [
+                "12345 8 2 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                "54321 13 2 fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210"
+            ],
+            "type": "DS",
+            "name": "ds.unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
                 "unit.tests."
             ],
             "type": "CNAME",
             "name": "excluded.unit.tests",
+            "ttl": 3600
+        },
+        {
+            "rdata": [
+                "1 . alpn=h2,h3 ipv4hint=1.2.3.4 no-default-alpn port=443",
+                "0 ."
+            ],
+            "type": "HTTPS",
+            "name": "https.unit.tests",
             "ttl": 3600
         },
         {
@@ -101,6 +127,15 @@
             "type": "CNAME",
             "name": "included.unit.tests",
             "ttl": 3600
+        },
+        {
+            "rdata": [
+                "31 58 52.1 S 115 49 11.7 E 20m 10m 10m 2m",
+                "53 13 10 N 2 18 26 W 20m 10m 1000m 2m"
+            ],
+            "type": "LOC",
+            "name": "loc.unit.tests",
+            "ttl": 300
         },
         {
             "rdata": [
@@ -129,6 +164,14 @@
             "type": "PTR",
             "name": "ptr.unit.tests",
             "ttl": 300
+        },
+        {
+            "rdata": [
+                "1 . alpn=h2,h3"
+            ],
+            "type": "SVCB",
+            "name": "svcb.unit.tests",
+            "ttl": 3600
         },
         {
             "rdata": [
@@ -167,7 +210,7 @@
         }
     ],
     "metadata": {
-        "totalElements": 19,
+        "totalElements": 24,
         "showAll": true
     }
 }
