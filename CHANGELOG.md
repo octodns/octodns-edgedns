@@ -1,3 +1,11 @@
+## 1.1.0 - 2026-04-03
+
+Minor:
+* Add support for TLSA, DS, HTTPS, LOC, and SVCB records. Fix CAA record parsing to properly handle quoted values. - [#63](https://github.com/octodns/octodns-edgedns/pull/63)
+
+Patch:
+* Use new [changelet](https://github.com/octodns/changelet) tooling - [#55](https://github.com/octodns/octodns-edgedns/pull/55)
+
 ## v1.0.0 - 2024-04-29 - Long overdue 1.0
 
 Noteworthy Changes:
